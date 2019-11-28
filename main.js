@@ -28,18 +28,55 @@ function init() {
     mainHero.y = 450;
     stage.addChild(mainHero);
 
-    var guardian = new createjs.Shape();
-    guardian.graphics
-        .beginFill("#ffff00")
-        .lineTo(-60, 0)
-        .lineTo(-30, 90)
-        .lineTo(0, 0)
-        .beginFill("#ff0000")
-        .drawCircle(0, 0, 15);
-    guardian.x = 850;
-    guardian.y = 450;
-    stage.addChild(guardian);
+    // var guardian = new createjs.Shape();
+    // guardian.graphics
+    //     .beginFill("#ffff00")
+    //     .lineTo(-200, -50)
+    //     .lineTo(-200, 50)
+    //     .lineTo(0, 0)
+    //     .beginFill("#ff0000")
+    //     .drawCircle(0, 0, 15);
+    // guardian.x = 850;
+    // guardian.y = 450;
+    // stage.addChild(guardian);
 
+    guardiansParams = [
+        {viewx : -200, viewy : 50, r : 15},
+        {}];
+
+    guardians = [];
+
+    for (var i = 0; i < 5; i++) {
+        console.log("test" + i);
+        var guard = new createjs.Shape();
+        guard.graphics
+            .beginFill("#ffff00")
+            .lineTo(-200, -50)
+            .lineTo(-200, 50)
+            .lineTo(0, 0)
+            .beginFill("#ff0000")
+            .drawCircle(0, 0, 15);
+        guard.x = 850;
+        guard.y = 450 - i*100;
+        guardians.push(guard);
+        stage.addChild(guard);
+
+        createjs.Tween.get(guard, {loop: true})
+        //какие установить значения параметрам,
+        //и сколько на это отведено времени
+            .to({x : 200}, 6000-i*1000)
+            .wait(1200)
+            .to({rotation: 180}, 600)
+            //что изменить после этого
+            .to({x: 850}, 6000-i*1000)
+            .to({rotation: 0}, 600)
+            .wait(1200);
+    }
+
+    for (var guardian in guardians) {
+        console.log("test", typeof guardian);
+
+    }
 
     var wall = new createjs.Shape();
     wall.graphics
@@ -48,7 +85,7 @@ function init() {
     wall.x = 50;
     wall.y = 450;
 
-    stage.addChild(wall);
+    // stage.addChild(wall);
 
     createjs.Ticker.addEventListener("tick", tick);
     createjs.Ticker.setFPS(60);
@@ -64,19 +101,7 @@ function init() {
         delete keys[event.keyCode];
     }
 
-    createjs.Tween.get(guardian, {loop: true})
-    //какие установить значения параметрам,
-    //и сколько на это отведено времени
-        .to({x : 200}, 6000)
-        .wait(1200)
-        .to({rotation: 180}, 600)
-        // .call(function () {
-        //     guardian.rotation = 180;
-        // })
-        //что изменить после этого
-        .to({x: 850}, 6000)
-        .to({rotation: 0}, 600)//измени y до 200
-        .wait(1200);
+
     //Ease - набор стандартных
     //функций изинга
 
@@ -96,8 +121,16 @@ function init() {
         if (mainHero.y + r >= screenHeight)
             mainHero.y = screenHeight-r;
 
-        if (mainHero.y - r <= 405)
-            mainHero.y = 405 + r;
+        // if (mainHero.y - r <= 405)
+        //     mainHero.y = 405 + r;
+
+        // var hit = mainHero.hitTest(event.stageX, event.stageY);
+        // if (guardian.x === mainHero.x && guardian.y === mainHero.y)
+        //     console.log(guardian.x, guardian.y);
+        // var area = ExtractFrame(guardian._sprite, 2);
+        // guardian.hitArea = area;
+
+        // guardian.on("mouseover", handleInteraction());
         stage.update();
     }
 
