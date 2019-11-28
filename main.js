@@ -41,10 +41,19 @@ function init() {
     // stage.addChild(guardian);
 
     guardiansParams = [
-        {viewx : -200, viewy : 50, r : 15},
+        {viewx: -200, viewy: 50, r: 15},
         {}];
 
-    guardians = [];
+    guardians = [{
+        x0: 100, //начальное положение
+        y0: 200,
+        path: [
+            ["to", {x: 200}, 6000],
+            ["wait", 1200]
+        ]
+    }, {}];
+
+    walls = [];
 
     for (var i = 0; i < 5; i++) {
         console.log("test" + i);
@@ -57,20 +66,39 @@ function init() {
             .beginFill("#ff0000")
             .drawCircle(0, 0, 15);
         guard.x = 850;
-        guard.y = 450 - i*100;
-        guardians.push(guard);
+        guard.y = 450 - i * 100;
+        // guardians.push(guard);
         stage.addChild(guard);
 
-        createjs.Tween.get(guard, {loop: true})
-        //какие установить значения параметрам,
-        //и сколько на это отведено времени
-            .to({x : 200}, 6000-i*1000)
-            .wait(1200)
-            .to({rotation: 180}, 600)
-            //что изменить после этого
-            .to({x: 850}, 6000-i*1000)
-            .to({rotation: 0}, 600)
-            .wait(1200);
+        if (i === 0) {
+            createjs.Tween.get(guard, {loop: true})
+            //какие установить значения параметрам,
+            //и сколько на это отведено времени
+                .to({x: 200}, 6000 - i * 1000)
+                .wait(1200)
+                .to({rotation: 180}, 600)
+                //что изменить после этого
+                .to({x: 850}, 6000 - i * 1000)
+                .to({rotation: 0}, 600)
+                .wait(1200);
+        } else if (i === 1) {
+            createjs.Tween.get(guard, {loop: true})
+            //какие установить значения параметрам,
+            //и сколько на это отведено времени
+                .to({x: 200}, 6000 - i * 1000)
+                .wait(1200)
+                .to({rotation: 90}, 300)
+                .to({y: 150}, 2000)
+                .to({rotation: 180}, 300)
+                .wait(1200)
+                //что изменить после этого
+                .to({x: 850}, 6000 - i * 1000)
+                .to({rotation: 270}, 300)
+                .wait(1200)
+                .to({y: 350}, 2000)
+                .to({rotation: 360}, 300)
+                .wait(1200);
+        }
     }
 
     for (var guardian in guardians) {
@@ -115,11 +143,11 @@ function init() {
         if (mainHero.x - r <= 0)
             mainHero.x = r;
         if (mainHero.x + r >= screenWidth)
-            mainHero.x = screenWidth-r;
+            mainHero.x = screenWidth - r;
         if (mainHero.y - r <= 0)
             mainHero.y = r;
         if (mainHero.y + r >= screenHeight)
-            mainHero.y = screenHeight-r;
+            mainHero.y = screenHeight - r;
 
         // if (mainHero.y - r <= 405)
         //     mainHero.y = 405 + r;
@@ -140,82 +168,82 @@ function init() {
     }*/
 }
 
-  /*  var spritesheets = new createjs.SpriteSheet({
-        images: ["run.png", "walk.png"],
-        frames: {
-            width: 32,
-            height: 32,
-            count: 192,
-            regX: 16,
-            regY: 16
-        },
-        animations: {
-            run: [0, 5],
-            walk: [6, 11]
-        }
-    });
+/*  var spritesheets = new createjs.SpriteSheet({
+      images: ["run.png", "walk.png"],
+      frames: {
+          width: 32,
+          height: 32,
+          count: 192,
+          regX: 16,
+          regY: 16
+      },
+      animations: {
+          run: [0, 5],
+          walk: [6, 11]
+      }
+  });
 
-    var hero = new createjs.Sprite(spritesheets);
-    hero.x = 200;
-    hero.y = 200;
-    hero.gotoAndPlay("walk");
-    stage.addChild(hero);
+  var hero = new createjs.Sprite(spritesheets);
+  hero.x = 200;
+  hero.y = 200;
+  hero.gotoAndPlay("walk");
+  stage.addChild(hero);
 
-    // var sprite = new createjs.Sprite(ss);
-    // sprite.x = 200;
-    // sprite.y = 200;
-    // sprite.gotoAndPlay("small");
-    // stage.addChild(sprite);
+  // var sprite = new createjs.Sprite(ss);
+  // sprite.x = 200;
+  // sprite.y = 200;
+  // sprite.gotoAndPlay("small");
+  // stage.addChild(sprite);
 
-    stage.update();
+  stage.update();
 
-    createjs.Ticker.framerate = 15;
-    createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
-    // createjs.Ticker.timingMode = createjs.Ticker.RAF;
-    // createjs.Ticker.timingMode = createjs.Ticker.TIMEOUT;
+  createjs.Ticker.framerate = 15;
+  createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
+  // createjs.Ticker.timingMode = createjs.Ticker.RAF;
+  // createjs.Ticker.timingMode = createjs.Ticker.TIMEOUT;
 
-    // createjs.Ticker.on("tick", stage);
-    createjs.Ticker.on("tick", tick);
+  // createjs.Ticker.on("tick", stage);
+  createjs.Ticker.on("tick", tick);
 
-    var speed = 20;
+  var speed = 20;
 
-    var tickTime = createjs.Ticker.getTime();
+  var tickTime = createjs.Ticker.getTime();
 
-    function tick() {
-        var curTime = createjs.Ticker.getEventTime();
-        var elapsedTime = (curTime - tickTime) / 1000;
-        tickTime = curTime;
-        var dist = elapsedTime * speed;
+  function tick() {
+      var curTime = createjs.Ticker.getEventTime();
+      var elapsedTime = (curTime - tickTime) / 1000;
+      tickTime = curTime;
+      var dist = elapsedTime * speed;
 
-        var d = Math.sqrt((hero.x - shape.x) * (hero.x - shape.x) + (hero.y - shape.y) * (hero.y - shape.y));
+      var d = Math.sqrt((hero.x - shape.x) * (hero.x - shape.x) + (hero.y - shape.y) * (hero.y - shape.y));
 
-        if (dist <= d) {
-            hero.x += (shape.x - hero.x) / d * dist;
-            hero.y += (shape.y - hero.y) / d * dist;
-        }
+      if (dist <= d) {
+          hero.x += (shape.x - hero.x) / d * dist;
+          hero.y += (shape.y - hero.y) / d * dist;
+      }
 
-        stage.update();
-    }
+      stage.update();
+  }
 
-    shape.on("pressmove", function (evt) {
-        evt.target.x = evt.stageX;
-        evt.target.y = evt.stageY;
-    });
-    shape.on("pressup", function (evt) {
-        console.log(shape.x, shape.y);
-    })
+  shape.on("pressmove", function (evt) {
+      evt.target.x = evt.stageX;
+      evt.target.y = evt.stageY;
+  });
+  shape.on("pressup", function (evt) {
+      console.log(shape.x, shape.y);
+  })
 
 
-    // sprite.on("click", boomClick);
-    //
-    // function boomClick() {
-    //     sprite.gotoAndPlay("boom");
-    //     console.log("boom");
-    //     sprite.on("animationend", function () {
-    //         console.log("boom finished");
-    //         stage.removeChild(sprite);
-    //     });
-    // }
+  // sprite.on("click", boomClick);
+  //
+  // function boomClick() {
+  //     sprite.gotoAndPlay("boom");
+  //     console.log("boom");
+  //     sprite.on("animationend", function () {
+  //         console.log("boom finished");
+  //         stage.removeChild(sprite);
+  //     });
+  // }
 } */
 
 // function Guard(name, size) {
