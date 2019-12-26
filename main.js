@@ -6,6 +6,8 @@ function init() {
     var screenWidth = 1000;
     var screenHeight = 500;
 
+
+
     var bg = new createjs.Shape();
     bg.graphics
         .beginFill("#cdcdcd")
@@ -62,10 +64,10 @@ function init() {
         y0: 425,
         rotated: 0,
         path: [
-            ["to", {x: 650}, 1000],
-            ["to", {rotation: 180}, 300],
-            ["to", {x: 900}, 1000],
-            ["to", {rotation: 0}, 300]
+            ["to", {x: 650}, 800],
+            ["to", {rotation: 180}, 200],
+            ["to", {x: 900}, 800],
+            ["to", {rotation: 0}, 200]
         ]
     },
         {
@@ -73,21 +75,21 @@ function init() {
             y0: 425,
             rotated: 180,
             path: [
-                ["wait", 900],
-                ["to", {rotation: 90}, 450],
-                ["wait", 900],
-                ["to", {rotation: 180}, 450]
+                ["wait", 450],
+                ["to", {rotation: 90}, 300],
+                ["wait", 450],
+                ["to", {rotation: 180}, 300]
             ]
         },
         {
             x0: 25,
-            y0: 425,
+            y0: 410,
             rotated: 135,
             path: [
-                ["wait", 900],
-                ["to", {x: 275, rotation: 45}, 1800],
-                ["wait", 900],
-                ["to", {x: 25, rotation: 135}, 1800]
+                ["wait", 450],
+                ["to", {x: 275, rotation: 45}, 900],
+                ["wait", 450],
+                ["to", {x: 25, rotation: 135}, 900]
             ]
         },
         {
@@ -139,8 +141,8 @@ function init() {
             y0: 150,
             rotated: 90,
             path: [
-                ["to", {rotation: 270}, 1800],
-                ["to", {rotation: 90}, 1800]
+                ["to", {rotation: 270}, 1200],
+                ["to", {rotation: 90}, 1200]
             ]
         },
         {
@@ -403,11 +405,30 @@ function init() {
     function win() {
         console.log("You Won!");
         createjs.Ticker.removeEventListener("tick", tick);
+        var finishTime = Math.round(createjs.Ticker.getTime()/10)/100;
+        var blackScreen = new createjs.Shape();
+        blackScreen.graphics.beginFill("#2e2e2e").rect(0,0, screenWidth, screenHeight);
+        stage.addChild(blackScreen);
+        var text = "YOU WON!\n\n" + "You did it in " + finishTime.toString() + " seconds!"
+            +"\n\n" + "Press f5 to play again";
+        var victoryText = new createjs.Text(text, "40px Arial", "#eaeaea");
+        victoryText.x = screenWidth/2;
+        victoryText.y = screenHeight/4;
+        victoryText.textAlign = "center";
+        stage.addChild(victoryText);
     }
 
     function Death() {
         console.log("Game Over");
         createjs.Ticker.removeEventListener("tick", tick);
+        var blackScreen = new createjs.Shape();
+        blackScreen.graphics.beginFill("#2e2e2e").rect(0,0, screenWidth, screenHeight);
+        stage.addChild(blackScreen);
+        var lostText = new createjs.Text("You lost!\n\nPress f5 to retry", "40px Arial", "#eaeaea");
+        lostText.x = screenWidth/2;
+        lostText.y = screenHeight/4;
+        lostText.textAlign = "center";
+        stage.addChild(lostText);
     }
 
     createjs.Ticker.addEventListener("tick", tick);
