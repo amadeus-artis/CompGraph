@@ -463,6 +463,4 @@ function init() {
 
             stage.update();
     }
-
-
 }
