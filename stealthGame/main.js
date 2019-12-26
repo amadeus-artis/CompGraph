@@ -6,8 +6,6 @@ function init() {
     var screenWidth = 1000;
     var screenHeight = 500;
 
-
-
     var bg = new createjs.Shape();
     bg.graphics
         .beginFill("#cdcdcd")
@@ -21,7 +19,12 @@ function init() {
     var r = 5;
     mainHero.graphics
         .beginFill("#000000")
-        .drawCircle(0, 0, r);
+        .drawCircle(0, 0, r)
+        .beginFill("#ffffff")
+        .rect(-r, -2, 2*r, 3)
+        .beginFill("#0047cf")
+        .drawCircle(-2, -.5, 1)
+        .drawCircle(2, -.5, 1);
     mainHero.x = 50;
     mainHero.y = 475;
     stage.addChild(mainHero);
@@ -138,7 +141,7 @@ function init() {
         },
         {
             x0: 300,
-            y0: 150,
+            y0: 160,
             rotated: 90,
             path: [
                 ["to", {rotation: 270}, 1200],
@@ -223,12 +226,18 @@ function init() {
 
         var guard = new createjs.Shape();
         guard.graphics
-            .beginFill("#ffe702")
+            .beginLinearGradientFill(["#ff9100", "#ffe702"], [0, .7], 10, 0, -100, 0)
             .lineTo(-100, -25)
             .lineTo(-100, 25)
             .lineTo(0, 0)
+            .beginFill("#000000")
+            .rect(-15, -3, 15, 6)
             .beginFill("#cf1400")
-            .drawCircle(0, 0, 7);
+            .rect(-10, -10, 10, 5)
+            .rect(-10, 5, 10, 5)
+            .drawCircle(0, 0, 7)
+            .beginFill("#2acf00")
+            .drawCircle(0, 0, 2);
         guard.rotation = guardian.rotated;
         guard.x = guardian.x0;
         guard.y = guardian.y0;
