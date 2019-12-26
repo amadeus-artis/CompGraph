@@ -409,7 +409,7 @@ function init() {
         var blackScreen = new createjs.Shape();
         blackScreen.graphics.beginFill("#2e2e2e").rect(0,0, screenWidth, screenHeight);
         stage.addChild(blackScreen);
-        var text = "YOU WON!\n\n" + "You did it in " + finishTime.toString() + " seconds!"
+        var text = "YOU WIN!\n\n" + "You did it in " + finishTime.toString() + " seconds!"
             +"\n\n" + "Press f5 to play again";
         var victoryText = new createjs.Text(text, "40px Arial", "#eaeaea");
         victoryText.x = screenWidth/2;
@@ -424,7 +424,7 @@ function init() {
         var blackScreen = new createjs.Shape();
         blackScreen.graphics.beginFill("#2e2e2e").rect(0,0, screenWidth, screenHeight);
         stage.addChild(blackScreen);
-        var lostText = new createjs.Text("You lost!\n\nPress f5 to retry", "40px Arial", "#eaeaea");
+        var lostText = new createjs.Text("You lose!\n\nPress f5 to retry", "40px Arial", "#eaeaea");
         lostText.x = screenWidth/2;
         lostText.y = screenHeight/4;
         lostText.textAlign = "center";
