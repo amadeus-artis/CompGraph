@@ -6,139 +6,387 @@ function init() {
     var screenWidth = 1000;
     var screenHeight = 500;
 
-    var keys = {};
-    // var shape = new createjs.Shape();
-    // shape.graphics
-    //     .beginFill("#000000")
-    //     .rect(25, -100, 10, 30)
-    //     .beginFill("#854200")
-    //     .rect(-50, -50, 100, 100)
-    //     .beginFill("#ca5f00")
-    //     .lineTo(60, -50).lineTo(0, -100).lineTo(-60, -50);
-    // shape.x = 350;
-    // shape.y = 150;
-    // stage.addChild(shape);
+    var bg = new createjs.Shape();
+    bg.graphics
+        .beginFill("#cdcdcd")
+        .rect(0,0, screenWidth, screenHeight);
+    stage.addChild(bg);
+
+    /*----- MAIN HERO -----*/
 
     var mainHero = new createjs.Shape();
-    var r = 10;
+
+    var r = 5;
     mainHero.graphics
         .beginFill("#000000")
         .drawCircle(0, 0, r);
     mainHero.x = 50;
-    mainHero.y = 450;
+    mainHero.y = 475;
     stage.addChild(mainHero);
 
-    // var guardian = new createjs.Shape();
-    // guardian.graphics
-    //     .beginFill("#ffff00")
-    //     .lineTo(-200, -50)
-    //     .lineTo(-200, 50)
-    //     .lineTo(0, 0)
-    //     .beginFill("#ff0000")
-    //     .drawCircle(0, 0, 15);
-    // guardian.x = 850;
-    // guardian.y = 450;
-    // stage.addChild(guardian);
+    /*----- EXIT -----*/
 
-    guardiansParams = [
-        {viewx: -200, viewy: 50, r: 15},
-        {}];
+    var exit = new createjs.Shape();
+    exit.graphics
+        .beginFill("#6d3600")
+        .rect(5, 5, 25, 45)
+        .beginFill("#cfb902")
+        .drawCircle(25, 30, 3);
 
-    guardians = [{
-        x0: 100, //начальное положение
-        y0: 200,
-        path: [
-            ["to", {x: 200}, 6000],
-            ["wait", 1200]
-        ]
-    }, {}];
+    stage.addChild(exit);
 
-    walls = [];
-
-    for (var i = 0; i < 5; i++) {
-        console.log("test" + i);
-        var guard = new createjs.Shape();
-        guard.graphics
-            .beginFill("#ffff00")
-            .lineTo(-200, -50)
-            .lineTo(-200, 50)
-            .lineTo(0, 0)
-            .beginFill("#ff0000")
-            .drawCircle(0, 0, 15);
-        guard.x = 850;
-        guard.y = 450 - i * 100;
-        // guardians.push(guard);
-        stage.addChild(guard);
-
-        if (i === 0) {
-            createjs.Tween.get(guard, {loop: true})
-            //какие установить значения параметрам,
-            //и сколько на это отведено времени
-                .to({x: 200}, 6000 - i * 1000)
-                .wait(1200)
-                .to({rotation: 180}, 600)
-                //что изменить после этого
-                .to({x: 850}, 6000 - i * 1000)
-                .to({rotation: 0}, 600)
-                .wait(1200);
-        } else if (i === 1) {
-            createjs.Tween.get(guard, {loop: true})
-            //какие установить значения параметрам,
-            //и сколько на это отведено времени
-                .to({x: 200}, 6000 - i * 1000)
-                .wait(1200)
-                .to({rotation: 90}, 300)
-                .to({y: 150}, 2000)
-                .to({rotation: 180}, 300)
-                .wait(1200)
-                //что изменить после этого
-                .to({x: 850}, 6000 - i * 1000)
-                .to({rotation: 270}, 300)
-                .wait(1200)
-                .to({y: 350}, 2000)
-                .to({rotation: 360}, 300)
-                .wait(1200);
+    function exitCollision() {
+        var finish = mainHero.localToLocal(0, 0, exit);
+        if (exit.hitTest(finish.x, finish.y - r) || exit.hitTest(finish.x, finish.y + r)
+            || exit.hitTest(finish.x - r, finish.y) || exit.hitTest(finish.x + r, finish.y)) {
+            win();
         }
     }
 
-    for (var guardian in guardians) {
-        console.log("test", typeof guardian);
+    /*----- GUARDIANS -----*/
 
+    guardians = [{
+        x0: 900,
+        y0: 475,
+        rotated: 0,
+        path: [
+            ["to", {x: 100}, 6000],
+            ["wait", 1200],
+            ["to", {rotation: -180}, 600],
+            ["to", {x: 900}, 6000],
+            ["to", {rotation: 0}, 600],
+            ["wait", 1200]
+        ]
+    }, {
+        x0: 900,
+        y0: 425,
+        rotated: 0,
+        path: [
+            ["to", {x: 650}, 1000],
+            ["to", {rotation: 180}, 300],
+            ["to", {x: 900}, 1000],
+            ["to", {rotation: 0}, 300]
+        ]
+    },
+        {
+            x0: 375,
+            y0: 425,
+            rotated: 180,
+            path: [
+                ["wait", 900],
+                ["to", {rotation: 90}, 450],
+                ["wait", 900],
+                ["to", {rotation: 180}, 450]
+            ]
+        },
+        {
+            x0: 25,
+            y0: 425,
+            rotated: 135,
+            path: [
+                ["wait", 900],
+                ["to", {x: 275, rotation: 45}, 1800],
+                ["wait", 900],
+                ["to", {x: 25, rotation: 135}, 1800]
+            ]
+        },
+        {
+            x0: 150,
+            y0: 200,
+            rotated: -90,
+            path: [
+                ["to", {x: 175, y: 175, rotation: -180}, 600],
+                ["to", {x: 150, y: 150, rotation: -270}, 600],
+                ["to", {x: 125, y: 175, rotation: -360}, 600],
+                ["to", {x: 150, y: 200, rotation: -450}, 600]
+            ]
+        },
+        {
+            x0: 150,
+            y0: 150,
+            rotated: 90,
+            path: [
+                ["to", {x: 125, y: 175, rotation: 0}, 600],
+                ["to", {x: 150, y: 200, rotation: -90}, 600],
+                ["to", {x: 175, y: 175, rotation: -180}, 600],
+                ["to", {x: 150, y: 150, rotation: -270}, 600]
+            ]
+        },
+        {
+            x0: 125,
+            y0: 175,
+            rotated: 0,
+            path: [
+                ["to", {x: 150, y: 200, rotation: -90}, 600],
+                ["to", {x: 175, y: 175, rotation: -180}, 600],
+                ["to", {x: 150, y: 150, rotation: -270}, 600],
+                ["to", {x: 125, y: 175, rotation: -360}, 600]
+            ]
+        },
+        {
+            x0: 175,
+            y0: 175,
+            rotated: 180,
+            path: [
+                ["to", {x: 150, y: 150, rotation: 90}, 600],
+                ["to", {x: 125, y: 175, rotation: 0}, 600],
+                ["to", {x: 150, y: 200, rotation: -90}, 600],
+                ["to", {x: 175, y: 175, rotation: -180}, 600]
+            ]
+        },
+        {
+            x0: 300,
+            y0: 150,
+            rotated: 90,
+            path: [
+                ["to", {rotation: 270}, 1800],
+                ["to", {rotation: 90}, 1800]
+            ]
+        },
+        {
+            x0: 500,
+            y0: 187,
+            rotated: 180,
+            path: [
+                ["to", {x: 550, rotation: 135}, 600],
+                ["to", {x: 600, rotation: 225}, 600],
+                ["to", {x: 650, rotation: 135}, 600],
+                ["to", {x: 700, rotation: 225}, 600],
+                ["to", {x: 750, rotation: 135}, 600],
+                ["to", {x: 800, rotation: 225}, 600],
+                ["to", {x: 850, rotation: 180}, 600],
+                ["wait", 600],
+                ["to", {rotation: 0}, 300],
+                ["to", {x: 800, rotation: 45}, 600],
+                ["to", {x: 750, rotation: -45}, 600],
+                ["to", {x: 700, rotation: 45}, 600],
+                ["to", {x: 650, rotation: -45}, 600],
+                ["to", {x: 600, rotation: 45}, 600],
+                ["to", {x: 550, rotation: -45}, 600],
+                ["to", {x: 500, rotation: 0}, 600],
+                ["wait", 600],
+                ["to", {rotation: 180}, 300]
+            ]
+        },
+        {
+            x0: 500,
+            y0: 250,
+            rotated: 180,
+            path: [
+                ["to", {x: 850}, 4200],
+                ["wait", 600],
+                ["to", {rotation: 0}, 300],
+                ["to", {x: 500}, 4200],
+                ["wait", 600],
+                ["to", {rotation: 180}, 300]
+            ]
+        },
+        {
+            x0: 500,
+            y0: 125,
+            rotated: 180,
+            path: [
+                    ["to", {x: 850}, 4200],
+                    ["wait", 600],
+                    ["to", {rotation: 360}, 300],
+                    ["to", {x: 500}, 4200],
+                    ["wait", 600],
+                    ["to", {rotation: 180}, 300]
+            ]
+        },
+        {
+            x0: 925,
+            y0: 125,
+            rotated: 270,
+            path: [
+                ["to", {y: 175}, 600],
+                ["wait", 600],
+                ["to", {y: 125}, 600],
+                ["wait", 600]
+            ]
+        },
+        {
+            x0: 950,
+            y0: 25,
+            rotated: 0,
+            path: []
+        }];
+
+    for (var guardian of guardians) {
+        creatingGuard(guardian);
+        console.log("guardian created");
     }
 
-    var wall = new createjs.Shape();
-    wall.graphics
-        .beginFill("#000000")
-        .rect(-50, -50, 1000, 5);
-    wall.x = 50;
-    wall.y = 450;
+    function creatingGuard(guardian) {
 
-    // stage.addChild(wall);
+        var guard = new createjs.Shape();
+        guard.graphics
+            .beginFill("#ffe702")
+            .lineTo(-100, -25)
+            .lineTo(-100, 25)
+            .lineTo(0, 0)
+            .beginFill("#cf1400")
+            .drawCircle(0, 0, 7);
+        guard.rotation = guardian.rotated;
+        guard.x = guardian.x0;
+        guard.y = guardian.y0;
+        stage.addChild(guard);
 
-    createjs.Ticker.addEventListener("tick", tick);
-    createjs.Ticker.setFPS(60);
+        var trace = createjs.Tween.get(guard, {loop: true});
+        for (var i = 0; i < guardian.path.length; i++) {
+            if (guardian.path[i][0] === "to") {
+                trace.to(guardian.path[i][1], guardian.path[i][2]);
+            } else if (guardian.path[i][0] === "wait") {
+                trace.wait(guardian.path[i][1]);
+            }
+        }
 
-    this.document.onkeydown = keydown;
-    this.document.onkeyup = keyup;
-
-    function keydown(event) {
-        keys[event.keyCode] = true;
+        guardian.pt = mainHero.localToLocal(0, 0, guard);
+        guardian.link = guard;
     }
 
-    function keyup(event) {
-        delete keys[event.keyCode];
+    function guardCollision() {
+        for (guardian of guardians) {
+            var pt = mainHero.localToLocal(0, 0, guardian.link);
+            if (guardian.link.hitTest(pt.x + r, pt.y + r) || guardian.link.hitTest(pt.x - r, pt.y - r)) {
+                Death();
+            }
+        }
     }
 
+    /*----- WALLS -----*/
 
-    //Ease - набор стандартных
-    //функций изинга
+    walls = [{
+        x0: 0,  //start
+        y0: 450,
+        wid: 300,
+        hei: 2
+    },
+        {
+            x0: 300, //pocket left
+            y0: 450,
+            wid: 2,
+            hei: -50
+        },
+        {
+            x0: 300, //pocket top
+            y0: 400,
+            wid: 50,
+            hei: 2
+        },
+        {
+            x0: 350, //pocket right
+            y0: 400,
+            wid: 2,
+            hei: 50
+        },
+        {
+            x0: 350, //first enter
+            y0: 450,
+            wid: 400,
+            hei: 2
+        },
+        {
+            x0: 800, //first enter
+            y0: 450,
+            wid: 200,
+            hei: 2
+        },
+        {
+            x0: 275, //second floor
+            y0: 325,
+            wid: 850,
+            hei: 2
+        },
+        {
+            x0: 175,
+            y0: 300,
+            wid: 100,
+            hei: 2
+        },
+        {
+            x0: 0, //second enter
+            y0: 300,
+            wid: 125,
+            hei: 2
+        },
+        {
+            x0: 275, //room
+            y0: 325,
+            wid: 2,
+            hei: -225
+        },
+        {
+            x0: 0, //end
+            y0: 50,
+            wid: 800,
+            hei: 2
+        },
+        {
+            x0: 850, //end enter
+            y0: 50,
+            wid: 150,
+            hei: 2
+        },
+        {
+            x0: 400, // third hall
+            y0: 50,
+            wid: 2,
+            hei: 225
+        },
+        {
+            x0: 400, //fourth hall
+            y0: 275,
+            wid: 500,
+            hei: 2
+        },
+        {
+            x0: 950, //fourth hall enter
+            y0: 275,
+            wid: 50,
+            hei: 2
+        },
+        {
+            x0: 400,
+            y0: 100,
+            wid: 50,
+            hei: 2
+        },
+        {
+            x0: 500,
+            y0: 100,
+            wid: 500,
+            hei: 2
+        }];
 
-    function tick() {
-        var speed = 5;
-        if (keys[37]) mainHero.x -= speed;
-        if (keys[38]) mainHero.y -= speed;
-        if (keys[39]) mainHero.x += speed;
-        if (keys[40]) mainHero.y += speed;
+    var brick = new createjs.Shape();
+        brick.graphics
+            .beginFill("#000000");
+
+        for (var wall of walls) {
+            var shadow = new createjs.Shape();
+            shadow.graphics
+                .beginFill("#929292")
+                .rect(wall.x0, wall.y0+2, wall.wid+4, wall.hei+4);
+            shadow.alpha = 0.6;
+            stage.addChild(shadow);
+            brick.graphics.rect(wall.x0, wall.y0, wall.wid, wall.hei)
+        }
+    stage.addChild(brick);
+
+    function wallCollision() {
+        for (wall in walls) {
+            var wallpt = mainHero.localToLocal(0, 0, brick);
+            if (brick.hitTest(wallpt.x, wallpt.y - r)) {
+                mainHero.y = mainHero.y + r;
+            } else if (brick.hitTest(wallpt.x, wallpt.y + r)) {
+                mainHero.y = mainHero.y - r;
+            } else if (brick.hitTest(wallpt.x - r, wallpt.y)) {
+                mainHero.x = mainHero.x + r;
+            } else if (brick.hitTest(wallpt.x + r, wallpt.y)) {
+                mainHero.x = mainHero.x - r;
+            }
+        }
 
         if (mainHero.x - r <= 0)
             mainHero.x = r;
@@ -148,120 +396,52 @@ function init() {
             mainHero.y = r;
         if (mainHero.y + r >= screenHeight)
             mainHero.y = screenHeight - r;
-
-        // if (mainHero.y - r <= 405)
-        //     mainHero.y = 405 + r;
-
-        // var hit = mainHero.hitTest(event.stageX, event.stageY);
-        // if (guardian.x === mainHero.x && guardian.y === mainHero.y)
-        //     console.log(guardian.x, guardian.y);
-        // var area = ExtractFrame(guardian._sprite, 2);
-        // guardian.hitArea = area;
-
-        // guardian.on("mouseover", handleInteraction());
-        stage.update();
     }
 
-    /*guardian.addEventListener('tick', guardAction);
-    function guardAction() {
-        console.log('guard tick');
-    }*/
+    /*----- -----*/
+
+    function win() {
+        console.log("You Won!");
+        createjs.Ticker.removeEventListener("tick", tick);
+    }
+
+    function Death() {
+        console.log("Game Over");
+        createjs.Ticker.removeEventListener("tick", tick);
+    }
+
+    createjs.Ticker.addEventListener("tick", tick);
+    createjs.Ticker.setFPS(60);
+
+    var keys = {};
+    function keysWork() {
+        this.document.onkeydown = keydown;
+        this.document.onkeyup = keyup;
+
+        function keydown(event) {
+            keys[event.keyCode] = true;
+        }
+
+        function keyup(event) {
+            delete keys[event.keyCode];
+        }
+    }
+    keysWork();
+
+    function tick() {
+
+            guardCollision();
+            wallCollision();
+            exitCollision();
+
+            var speed = 5;
+            if (keys[37]) mainHero.x -= speed;
+            if (keys[38]) mainHero.y -= speed;
+            if (keys[39]) mainHero.x += speed;
+            if (keys[40]) mainHero.y += speed;
+
+            stage.update();
+    }
+
+
 }
-
-/*  var spritesheets = new createjs.SpriteSheet({
-      images: ["run.png", "walk.png"],
-      frames: {
-          width: 32,
-          height: 32,
-          count: 192,
-          regX: 16,
-          regY: 16
-      },
-      animations: {
-          run: [0, 5],
-          walk: [6, 11]
-      }
-  });
-
-  var hero = new createjs.Sprite(spritesheets);
-  hero.x = 200;
-  hero.y = 200;
-  hero.gotoAndPlay("walk");
-  stage.addChild(hero);
-
-  // var sprite = new createjs.Sprite(ss);
-  // sprite.x = 200;
-  // sprite.y = 200;
-  // sprite.gotoAndPlay("small");
-  // stage.addChild(sprite);
-
-  stage.update();
-
-  createjs.Ticker.framerate = 15;
-  createjs.Ticker.timingMode = createjs.Ticker.RAF_SYNCHED;
-  // createjs.Ticker.timingMode = createjs.Ticker.RAF;
-  // createjs.Ticker.timingMode = createjs.Ticker.TIMEOUT;
-
-  // createjs.Ticker.on("tick", stage);
-  createjs.Ticker.on("tick", tick);
-
-  var speed = 20;
-
-  var tickTime = createjs.Ticker.getTime();
-
-  function tick() {
-      var curTime = createjs.Ticker.getEventTime();
-      var elapsedTime = (curTime - tickTime) / 1000;
-      tickTime = curTime;
-      var dist = elapsedTime * speed;
-
-      var d = Math.sqrt((hero.x - shape.x) * (hero.x - shape.x) + (hero.y - shape.y) * (hero.y - shape.y));
-
-      if (dist <= d) {
-          hero.x += (shape.x - hero.x) / d * dist;
-          hero.y += (shape.y - hero.y) / d * dist;
-      }
-
-      stage.update();
-  }
-
-  shape.on("pressmove", function (evt) {
-      evt.target.x = evt.stageX;
-      evt.target.y = evt.stageY;
-  });
-  shape.on("pressup", function (evt) {
-      console.log(shape.x, shape.y);
-  })
-
-
-  // sprite.on("click", boomClick);
-  //
-  // function boomClick() {
-  //     sprite.gotoAndPlay("boom");
-  //     console.log("boom");
-  //     sprite.on("animationend", function () {
-  //         console.log("boom finished");
-  //         stage.removeChild(sprite);
-  //     });
-  // }
-} */
-
-// function Guard(name, size) {
-//     this.name = name;
-//     this.size = size;
-//
-//     this.sayHello = function() {
-//         console.log("hello", this.name);
-//     };
-//     this.graphics
-//         .beginFill("#ff0000")
-//         .drawCircle(0, 0, 15)
-//         .beginFill("#000000")
-//         .rect(0,0, -20,2);
-//     this.x = 850;
-//     this.y = 50;
-//     stage.addChild(this);
-//
-// }
-//
-// var g = new Guard("Ilya", 15);
